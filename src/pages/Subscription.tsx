@@ -4,10 +4,10 @@ import { CreditCard, Check } from 'lucide-react';
 const Subscription: React.FC = () => {
   return (
     <div className="max-w-3xl mx-auto">
-      <h1 className="text-4xl font-bold mb-8 text-center text-blue-800">Subscribe to LitGram Study</h1>
-      
-      <div className="bg-white p-8 rounded-lg shadow-md">
-        <h2 className="text-3xl font-semibold mb-6 text-blue-800">Choose Your Plan</h2>
+      <h1 className="text-3xl sm:text-4xl font-bold mb-8 text-center text-blue-800">Subscribe to LitGram Study</h1>
+
+      <div className="bg-white p-4 sm:p-8 rounded-lg shadow-md">
+        <h2 className="text-2xl sm:text-3xl font-semibold mb-6 text-blue-800">Choose Your Plan</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="border-2 border-blue-200 p-6 rounded-lg hover:border-blue-500 cursor-pointer transition-colors">

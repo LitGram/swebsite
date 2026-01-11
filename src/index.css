@@ -24,3 +24,27 @@ body {
 .card {
   @apply bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow;
 }
+
+/* Mobile responsiveness improvements */
+@media (max-width: 640px) {
+  .card {
+    @apply p-4;
+  }
+
+  .btn-primary, .btn-secondary {
+    @apply text-sm py-2 px-3;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Improve touch targets on mobile */
+@media (max-width: 768px) {
+  a, button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}

@@ -1,42 +1,35 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { BookOpen, Users, Lightbulb, Quote, Clock, Download, BookA } from 'lucide-react';
-
-// Mock data for demonstration (unchanged)
-const bookData = {
-  1: {
-    title: "To Kill a Mockingbird",
-    author: "Harper Lee",
-    summary: "Set in the 1930s Alabama, this novel addresses issues of racism and injustice through the eyes of young Scout Finch.",
-    characters: ["Scout Finch", "Atticus Finch", "Jem Finch", "Boo Radley"],
-    themes: ["Racism", "Injustice", "Coming of Age", "Moral Education"],
-    quotes: [
-      "You never really understand a person until you consider things from his point of view...Until you climb inside of his skin and walk around in it.",
-      "Mockingbirds don't do one thing but make music for us to enjoy. They don't eat up people's gardens, don't nest in corncribs, they don't do one thing but sing their hearts out for us. That's why it's a sin to kill a mockingbird."
-    ],
-    context: "The Great Depression era in the Southern United States, reflecting the social and racial tensions of the time.",
-    quizQuestions: [
-      {
-        question: "Who is the narrator of the story?",
-        options: ["Atticus Finch", "Scout Finch", "Jem Finch", "Boo Radley"],
-        correctAnswer: 1
-      },
-      {
-        question: "What is Atticus Finch's profession?",
-        options: ["Teacher", "Doctor", "Lawyer", "Sheriff"],
-        correctAnswer: 2
-      }
-    ]
-  }
-};
+import React, { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { BookOpen, Users, Lightbulb, Quote, Clock, Download, BookA, ArrowLeft, Trophy } from 'lucide-react';
+import { getBookById } from '../data/books';
+import { Book } from '../types/book';
+import { useApp } from '../context/AppContext';
 
 const BookPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const book = bookData[Number(id)];
+  const book: Book | undefined = id ? getBookById(Number(id)) : undefined;
+  const { saveQuizScore, getQuizScore } = useApp();
   const [quizScore, setQuizScore] = useState<number | null>(null);
+  const [previousScore, setPreviousScore] = useState<{ score: number; total: number; date: string } | null>(null);
+
+  useEffect(() => {
+    if (book) {
+      const saved = getQuizScore(book.id);
+      setPreviousScore(saved);
+    }
+  }, [book, getQuizScore]);
 
   if (!book) {
-    return <div>Book not found</div>;
+    return (
+      <div className="text-center py-16">
+        <h1 className="text-4xl font-bold text-gray-700 mb-4">Book Not Found</h1>
+        <p className="text-gray-600 mb-8">Sorry, we couldn't find the book you're looking for.</p>
+        <Link to="/" className="btn-primary inline-flex items-center">
+          <ArrowLeft className="mr-2" size={20} />
+          Back to Home
+        </Link>
+      </div>
+    );
   }
 
   const handleQuizSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -49,6 +42,12 @@ const BookPage: React.FC = () => {
       }
     });
     setQuizScore(score);
+    saveQuizScore(book.id, score, book.quizQuestions.length);
+    setPreviousScore({
+      score,
+      total: book.quizQuestions.length,
+      date: new Date().toISOString(),
+    });
   };
 
   const handleDownloadPDF = () => {
@@ -57,22 +56,22 @@ const BookPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8">
-      <section className="bg-blue-700 text-white p-8 rounded-lg">
-        <h1 className="text-4xl font-bold mb-2">{book.title}</h1>
-        <p className="text-xl">by {book.author}</p>
+    <div className="space-y-6 sm:space-y-8">
+      <section className="bg-blue-700 text-white p-4 sm:p-6 md:p-8 rounded-lg">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">{book.title}</h1>
+        <p className="text-lg sm:text-xl">by {book.author}</p>
       </section>
 
       <section className="card">
-        <h2 className="text-2xl font-semibold mb-4 flex items-center text-blue-800">
-          <BookOpen className="mr-2 text-red-500" /> Summary
+        <h2 className="text-xl sm:text-2xl font-semibold mb-4 flex items-center text-blue-800">
+          <BookOpen className="mr-2 text-red-500 flex-shrink-0" size={24} /> Summary
         </h2>
         <p>{book.summary}</p>
       </section>
 
       <section className="card">
-        <h2 className="text-2xl font-semibold mb-4 flex items-center text-blue-800">
-          <Users className="mr-2 text-red-500" /> Characters
+        <h2 className="text-xl sm:text-2xl font-semibold mb-4 flex items-center text-blue-800">
+          <Users className="mr-2 text-red-500 flex-shrink-0" size={24} /> Characters
         </h2>
         <ul className="list-disc list-inside">
           {book.characters.map((character, index) => (
@@ -82,8 +81,8 @@ const BookPage: React.FC = () => {
       </section>
 
       <section className="card">
-        <h2 className="text-2xl font-semibold mb-4 flex items-center text-blue-800">
-          <Lightbulb className="mr-2 text-red-500" /> Themes
+        <h2 className="text-xl sm:text-2xl font-semibold mb-4 flex items-center text-blue-800">
+          <Lightbulb className="mr-2 text-red-500 flex-shrink-0" size={24} /> Themes
         </h2>
         <ul className="list-disc list-inside">
           {book.themes.map((theme, index) => (
@@ -93,8 +92,8 @@ const BookPage: React.FC = () => {
       </section>
 
       <section className="card">
-        <h2 className="text-2xl font-semibold mb-4 flex items-center text-blue-800">
-          <Quote className="mr-2 text-red-500" /> Key Quotes
+        <h2 className="text-xl sm:text-2xl font-semibold mb-4 flex items-center text-blue-800">
+          <Quote className="mr-2 text-red-500 flex-shrink-0" size={24} /> Key Quotes
         </h2>
         {book.quotes.map((quote, index) => (
           <blockquote key={index} className="border-l-4 border-red-500 pl-4 my-4 italic">
@@ -104,16 +103,29 @@ const BookPage: React.FC = () => {
       </section>
 
       <section className="card">
-        <h2 className="text-2xl font-semibold mb-4 flex items-center text-blue-800">
-          <Clock className="mr-2 text-red-500" /> Historical Context
+        <h2 className="text-xl sm:text-2xl font-semibold mb-4 flex items-center text-blue-800">
+          <Clock className="mr-2 text-red-500 flex-shrink-0" size={24} /> Historical Context
         </h2>
         <p>{book.context}</p>
       </section>
 
       <section className="card">
-        <h2 className="text-2xl font-semibold mb-4 flex items-center text-blue-800">
-          <BookA className="mr-2 text-red-500" /> Quiz
+        <h2 className="text-xl sm:text-2xl font-semibold mb-4 flex items-center text-blue-800">
+          <BookA className="mr-2 text-red-500 flex-shrink-0" size={24} /> Quiz
         </h2>
+        {previousScore && !quizScore && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 flex items-start">
+            <Trophy className="text-blue-600 mr-3 flex-shrink-0" size={24} />
+            <div>
+              <p className="font-semibold text-blue-800">Previous Score</p>
+              <p className="text-blue-700">
+                You scored {previousScore.score} out of {previousScore.total} on{' '}
+                {new Date(previousScore.date).toLocaleDateString()}
+              </p>
+              <p className="text-sm text-blue-600 mt-1">Take the quiz again to improve your score!</p>
+            </div>
+          </div>
+        )}
         <form onSubmit={handleQuizSubmit}>
           {book.quizQuestions.map((q, index) => (
             <div key={index} className="mb-4">
@@ -147,8 +159,8 @@ const BookPage: React.FC = () => {
       </section>
 
       <section className="card">
-        <h2 className="text-2xl font-semibold mb-4 flex items-center text-blue-800">
-          <Download className="mr-2 text-red-500" /> Download Study Guide
+        <h2 className="text-xl sm:text-2xl font-semibold mb-4 flex items-center text-blue-800">
+          <Download className="mr-2 text-red-500 flex-shrink-0" size={24} /> Download Study Guide
         </h2>
         <button
           onClick={handleDownloadPDF}
