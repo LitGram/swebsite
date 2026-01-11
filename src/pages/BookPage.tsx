@@ -1,13 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { BookOpen, Users, Lightbulb, Quote, Clock, Download, BookA, ArrowLeft } from 'lucide-react';
+import { BookOpen, Users, Lightbulb, Quote, Clock, Download, BookA, ArrowLeft, Trophy } from 'lucide-react';
 import { getBookById } from '../data/books';
 import { Book } from '../types/book';
+import { useApp } from '../context/AppContext';
 
 const BookPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const book: Book | undefined = id ? getBookById(Number(id)) : undefined;
+  const { saveQuizScore, getQuizScore } = useApp();
   const [quizScore, setQuizScore] = useState<number | null>(null);
+  const [previousScore, setPreviousScore] = useState<{ score: number; total: number; date: string } | null>(null);
+
+  useEffect(() => {
+    if (book) {
+      const saved = getQuizScore(book.id);
+      setPreviousScore(saved);
+    }
+  }, [book, getQuizScore]);
 
   if (!book) {
     return (
@@ -32,6 +42,12 @@ const BookPage: React.FC = () => {
       }
     });
     setQuizScore(score);
+    saveQuizScore(book.id, score, book.quizQuestions.length);
+    setPreviousScore({
+      score,
+      total: book.quizQuestions.length,
+      date: new Date().toISOString(),
+    });
   };
 
   const handleDownloadPDF = () => {
@@ -40,22 +56,22 @@ const BookPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8">
-      <section className="bg-blue-700 text-white p-8 rounded-lg">
-        <h1 className="text-4xl font-bold mb-2">{book.title}</h1>
-        <p className="text-xl">by {book.author}</p>
+    <div className="space-y-6 sm:space-y-8">
+      <section className="bg-blue-700 text-white p-4 sm:p-6 md:p-8 rounded-lg">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">{book.title}</h1>
+        <p className="text-lg sm:text-xl">by {book.author}</p>
       </section>
 
       <section className="card">
-        <h2 className="text-2xl font-semibold mb-4 flex items-center text-blue-800">
-          <BookOpen className="mr-2 text-red-500" /> Summary
+        <h2 className="text-xl sm:text-2xl font-semibold mb-4 flex items-center text-blue-800">
+          <BookOpen className="mr-2 text-red-500 flex-shrink-0" size={24} /> Summary
         </h2>
         <p>{book.summary}</p>
       </section>
 
       <section className="card">
-        <h2 className="text-2xl font-semibold mb-4 flex items-center text-blue-800">
-          <Users className="mr-2 text-red-500" /> Characters
+        <h2 className="text-xl sm:text-2xl font-semibold mb-4 flex items-center text-blue-800">
+          <Users className="mr-2 text-red-500 flex-shrink-0" size={24} /> Characters
         </h2>
         <ul className="list-disc list-inside">
           {book.characters.map((character, index) => (
@@ -65,8 +81,8 @@ const BookPage: React.FC = () => {
       </section>
 
       <section className="card">
-        <h2 className="text-2xl font-semibold mb-4 flex items-center text-blue-800">
-          <Lightbulb className="mr-2 text-red-500" /> Themes
+        <h2 className="text-xl sm:text-2xl font-semibold mb-4 flex items-center text-blue-800">
+          <Lightbulb className="mr-2 text-red-500 flex-shrink-0" size={24} /> Themes
         </h2>
         <ul className="list-disc list-inside">
           {book.themes.map((theme, index) => (
@@ -76,8 +92,8 @@ const BookPage: React.FC = () => {
       </section>
 
       <section className="card">
-        <h2 className="text-2xl font-semibold mb-4 flex items-center text-blue-800">
-          <Quote className="mr-2 text-red-500" /> Key Quotes
+        <h2 className="text-xl sm:text-2xl font-semibold mb-4 flex items-center text-blue-800">
+          <Quote className="mr-2 text-red-500 flex-shrink-0" size={24} /> Key Quotes
         </h2>
         {book.quotes.map((quote, index) => (
           <blockquote key={index} className="border-l-4 border-red-500 pl-4 my-4 italic">
@@ -87,16 +103,29 @@ const BookPage: React.FC = () => {
       </section>
 
       <section className="card">
-        <h2 className="text-2xl font-semibold mb-4 flex items-center text-blue-800">
-          <Clock className="mr-2 text-red-500" /> Historical Context
+        <h2 className="text-xl sm:text-2xl font-semibold mb-4 flex items-center text-blue-800">
+          <Clock className="mr-2 text-red-500 flex-shrink-0" size={24} /> Historical Context
         </h2>
         <p>{book.context}</p>
       </section>
 
       <section className="card">
-        <h2 className="text-2xl font-semibold mb-4 flex items-center text-blue-800">
-          <BookA className="mr-2 text-red-500" /> Quiz
+        <h2 className="text-xl sm:text-2xl font-semibold mb-4 flex items-center text-blue-800">
+          <BookA className="mr-2 text-red-500 flex-shrink-0" size={24} /> Quiz
         </h2>
+        {previousScore && !quizScore && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 flex items-start">
+            <Trophy className="text-blue-600 mr-3 flex-shrink-0" size={24} />
+            <div>
+              <p className="font-semibold text-blue-800">Previous Score</p>
+              <p className="text-blue-700">
+                You scored {previousScore.score} out of {previousScore.total} on{' '}
+                {new Date(previousScore.date).toLocaleDateString()}
+              </p>
+              <p className="text-sm text-blue-600 mt-1">Take the quiz again to improve your score!</p>
+            </div>
+          </div>
+        )}
         <form onSubmit={handleQuizSubmit}>
           {book.quizQuestions.map((q, index) => (
             <div key={index} className="mb-4">
@@ -130,8 +159,8 @@ const BookPage: React.FC = () => {
       </section>
 
       <section className="card">
-        <h2 className="text-2xl font-semibold mb-4 flex items-center text-blue-800">
-          <Download className="mr-2 text-red-500" /> Download Study Guide
+        <h2 className="text-xl sm:text-2xl font-semibold mb-4 flex items-center text-blue-800">
+          <Download className="mr-2 text-red-500 flex-shrink-0" size={24} /> Download Study Guide
         </h2>
         <button
           onClick={handleDownloadPDF}

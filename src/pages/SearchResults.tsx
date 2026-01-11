@@ -4,15 +4,22 @@ import { Book, Search } from 'lucide-react';
 import { useSearch } from '../context/SearchContext';
 import { searchBooks } from '../data/books';
 import { Book as BookType } from '../types/book';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const SearchResults: React.FC = () => {
   const { searchQuery } = useSearch();
   const [results, setResults] = useState<BookType[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (searchQuery) {
-      const searchResults = searchBooks(searchQuery);
-      setResults(searchResults);
+      setIsLoading(true);
+      // Simulate brief loading for better UX
+      setTimeout(() => {
+        const searchResults = searchBooks(searchQuery);
+        setResults(searchResults);
+        setIsLoading(false);
+      }, 300);
     }
   }, [searchQuery]);
 
@@ -30,7 +37,9 @@ const SearchResults: React.FC = () => {
 
       {searchQuery && (
         <>
-          {results.length > 0 ? (
+          {isLoading ? (
+            <LoadingSpinner text="Searching books..." />
+          ) : results.length > 0 ? (
             <section>
               <h2 className="text-2xl font-semibold mb-6 text-blue-800">
                 Found {results.length} {results.length === 1 ? 'book' : 'books'}

@@ -7,14 +7,14 @@ const Home: React.FC = () => {
   const allBooks = getAllBooks();
 
   return (
-    <div className="space-y-12">
-      <section className="text-center bg-blue-700 text-white py-16 rounded-lg">
-        <h1 className="text-5xl font-bold mb-4">Welcome to LitGram Study</h1>
-        <p className="text-xl">Your comprehensive resource for English literature analysis and study guides.</p>
+    <div className="space-y-8 sm:space-y-12">
+      <section className="text-center bg-blue-700 text-white py-8 sm:py-12 md:py-16 px-4 rounded-lg">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">Welcome to LitGram Study</h1>
+        <p className="text-base sm:text-lg md:text-xl px-2">Your comprehensive resource for English literature analysis and study guides.</p>
       </section>
 
       <section>
-        <h2 className="text-3xl font-semibold mb-6 text-blue-800">Our Book Collection</h2>
+        <h2 className="text-2xl sm:text-3xl font-semibold mb-4 sm:mb-6 text-blue-800">Our Book Collection</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {allBooks.map((book) => (
             <Link key={book.id} to={`/book/${book.id}`} className="card group">
@@ -26,8 +26,8 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      <section className="bg-blue-50 p-8 rounded-lg">
-        <h2 className="text-3xl font-semibold mb-6 text-blue-800">Why Choose LitGram Study?</h2>
+      <section className="bg-blue-50 p-4 sm:p-6 md:p-8 rounded-lg">
+        <h2 className="text-2xl sm:text-3xl font-semibold mb-4 sm:mb-6 text-blue-800">Why Choose LitGram Study?</h2>
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <li className="flex items-start">
             <BookOpen className="w-8 h-8 mr-3 text-red-500 flex-shrink-0" />
@@ -61,7 +61,7 @@ const Home: React.FC = () => {
       </section>
 
       <section className="card">
-        <h2 className="text-3xl font-semibold mb-6 text-blue-800">For Educators</h2>
+        <h2 className="text-2xl sm:text-3xl font-semibold mb-4 sm:mb-6 text-blue-800">For Educators</h2>
         <p className="mb-4">LitGram Study offers valuable resources for teachers and professors:</p>
         <ul className="list-disc list-inside space-y-2 mb-6">
           <li>Lesson plans aligned with common curricula</li>
