@@ -1,42 +1,25 @@
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { BookOpen, Users, Lightbulb, Quote, Clock, Download, BookA } from 'lucide-react';
-
-// Mock data for demonstration (unchanged)
-const bookData = {
-  1: {
-    title: "To Kill a Mockingbird",
-    author: "Harper Lee",
-    summary: "Set in the 1930s Alabama, this novel addresses issues of racism and injustice through the eyes of young Scout Finch.",
-    characters: ["Scout Finch", "Atticus Finch", "Jem Finch", "Boo Radley"],
-    themes: ["Racism", "Injustice", "Coming of Age", "Moral Education"],
-    quotes: [
-      "You never really understand a person until you consider things from his point of view...Until you climb inside of his skin and walk around in it.",
-      "Mockingbirds don't do one thing but make music for us to enjoy. They don't eat up people's gardens, don't nest in corncribs, they don't do one thing but sing their hearts out for us. That's why it's a sin to kill a mockingbird."
-    ],
-    context: "The Great Depression era in the Southern United States, reflecting the social and racial tensions of the time.",
-    quizQuestions: [
-      {
-        question: "Who is the narrator of the story?",
-        options: ["Atticus Finch", "Scout Finch", "Jem Finch", "Boo Radley"],
-        correctAnswer: 1
-      },
-      {
-        question: "What is Atticus Finch's profession?",
-        options: ["Teacher", "Doctor", "Lawyer", "Sheriff"],
-        correctAnswer: 2
-      }
-    ]
-  }
-};
+import { useParams, Link } from 'react-router-dom';
+import { BookOpen, Users, Lightbulb, Quote, Clock, Download, BookA, ArrowLeft } from 'lucide-react';
+import { getBookById } from '../data/books';
+import { Book } from '../types/book';
 
 const BookPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const book = bookData[Number(id)];
+  const book: Book | undefined = id ? getBookById(Number(id)) : undefined;
   const [quizScore, setQuizScore] = useState<number | null>(null);
 
   if (!book) {
-    return <div>Book not found</div>;
+    return (
+      <div className="text-center py-16">
+        <h1 className="text-4xl font-bold text-gray-700 mb-4">Book Not Found</h1>
+        <p className="text-gray-600 mb-8">Sorry, we couldn't find the book you're looking for.</p>
+        <Link to="/" className="btn-primary inline-flex items-center">
+          <ArrowLeft className="mr-2" size={20} />
+          Back to Home
+        </Link>
+      </div>
+    );
   }
 
   const handleQuizSubmit = (e: React.FormEvent<HTMLFormElement>) => {

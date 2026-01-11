@@ -1,14 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Book, BookOpen, Users, Lightbulb } from 'lucide-react';
-
-const featuredBooks = [
-  { id: 1, title: "To Kill a Mockingbird", author: "Harper Lee" },
-  { id: 2, title: "1984", author: "George Orwell" },
-  { id: 3, title: "Pride and Prejudice", author: "Jane Austen" },
-];
+import { getAllBooks } from '../data/books';
 
 const Home: React.FC = () => {
+  const allBooks = getAllBooks();
+
   return (
     <div className="space-y-12">
       <section className="text-center bg-blue-700 text-white py-16 rounded-lg">
@@ -17,9 +14,9 @@ const Home: React.FC = () => {
       </section>
 
       <section>
-        <h2 className="text-3xl font-semibold mb-6 text-blue-800">Featured Books</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {featuredBooks.map((book) => (
+        <h2 className="text-3xl font-semibold mb-6 text-blue-800">Our Book Collection</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {allBooks.map((book) => (
             <Link key={book.id} to={`/book/${book.id}`} className="card group">
               <Book className="w-16 h-16 mb-4 text-red-500 group-hover:text-blue-600 transition-colors" />
               <h3 className="text-xl font-semibold mb-2 group-hover:text-blue-700 transition-colors">{book.title}</h3>
